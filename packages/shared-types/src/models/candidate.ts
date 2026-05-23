@@ -1,4 +1,4 @@
-import type { ParsedCV } from './parsing';
+import type { ParsedCandidateProfileData, ParsedCV } from './parsing';
 
 export type CvParseStatus =
   | 'not_required'
@@ -33,6 +33,7 @@ export interface Candidate {
   registrationSource: RegistrationSource;
   cvParseStatus: CvParseStatus;
   cvStoragePath?: string | null;
+  parsedData?: ParsedCandidateProfileData | null;
 
   createdAt: Date;
   updatedAt: Date;

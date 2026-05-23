@@ -5,6 +5,7 @@ import type {
   Candidate,
   CreateCandidateDTO,
   CvParseStatus,
+  ParsedCandidateProfileData,
 } from '@ats/shared-types';
 
 import { db } from '../core/firebase-admin';
@@ -118,6 +119,80 @@ export class CandidatesRepository {
     } catch (error) {
       throw new CandidatesRepositoryError(
         `No se pudo actualizar el CV del candidato ${candidateId}.`,
+        error,
+      );
+    }
+  }
+
+  /**
+   * Marca el inicio del parsing. Resetea parsedData a null y deja el doc
+   * en estado "processing" para que cualquier consumidor lo identifique
+   * como en curso.
+   */
+  async markParsingProcessing(
+    candidateId: string,
+    cvStoragePath: string,
+  ): Promise<void> {
+    try {
+      await this.collection.doc(candidateId).set(
+        {
+          cvParseStatus: 'processing' as CvParseStatus,
+          cvStoragePath,
+          parsedData: null,
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+    } catch (error) {
+      throw new CandidatesRepositoryError(
+        `No se pudo marcar el parsing como processing para ${candidateId}.`,
+        error,
+      );
+    }
+  }
+
+  /**
+   * Cierra el parsing exitosamente: persiste el JSON estructurado y deja
+   * el doc en estado "done".
+   */
+  async markParsingDone(
+    candidateId: string,
+    parsedData: ParsedCandidateProfileData,
+  ): Promise<void> {
+    try {
+      await this.collection.doc(candidateId).set(
+        {
+          cvParseStatus: 'done' as CvParseStatus,
+          parsedData,
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+    } catch (error) {
+      throw new CandidatesRepositoryError(
+        `No se pudo marcar el parsing como done para ${candidateId}.`,
+        error,
+      );
+    }
+  }
+
+  /**
+   * Cierra el parsing con error. Limpia parsedData para evitar dejar
+   * datos inconsistentes en el documento.
+   */
+  async markParsingFailed(candidateId: string): Promise<void> {
+    try {
+      await this.collection.doc(candidateId).set(
+        {
+          cvParseStatus: 'failed' as CvParseStatus,
+          parsedData: null,
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+    } catch (error) {
+      throw new CandidatesRepositoryError(
+        `No se pudo marcar el parsing como failed para ${candidateId}.`,
         error,
       );
     }
