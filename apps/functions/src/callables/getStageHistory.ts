@@ -1,5 +1,5 @@
 import { logger } from 'firebase-functions';
-import { onRequest } from 'firebase-functions/v2/https';
+import { HttpsError, onRequest } from 'firebase-functions/v2/https';
 
 import { HttpAuthError, requireAuthenticatedUser } from '../core/httpAuth';
 import { validateGetStageHistoryPayload } from '../validators/getStageHistoryValidator';
@@ -26,6 +26,11 @@ export const getStageHistory = onRequest(async (request, response) => {
   } catch (error) {
     if (error instanceof HttpAuthError) {
       response.status(401).json({ error: error.message });
+      return;
+    }
+
+    if (error instanceof HttpsError) {
+      response.status(400).json({ error: error.message });
       return;
     }
 

@@ -90,4 +90,100 @@ describe('updateApplicationStage — integración HTTP + Firestore', () => {
     expect(snap.data()?.stage).toBe('hired');
     expect(snap.data()?.status).toBe('hired');
   });
+
+  it('TC-UAS-02 stage rejected con rejectionReason → 200 y Firestore actualizado', async () => {
+    const res = await fetch(FN_URL, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeader(DEV_TOKENS.recruiter),
+      },
+      body: JSON.stringify({
+        applicationId: appId,
+        stage: 'rejected',
+        rejectionReason: 'No cumple los requisitos mínimos.',
+      }),
+    });
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toEqual({ ok: true });
+
+    const snap = await db.collection(COLLECTION).doc(appId).get();
+    expect(snap.data()?.stage).toBe('rejected');
+    expect(snap.data()?.status).toBe('rejected');
+    expect(snap.data()?.rejectionReason).toBe('No cumple los requisitos mínimos.');
+  });
+
+  it('TC-UAS-03 stage rejected SIN rejectionReason → 400', async () => {
+    const res = await fetch(FN_URL, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeader(DEV_TOKENS.recruiter),
+      },
+      body: JSON.stringify({ applicationId: appId, stage: 'rejected' }),
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('TC-UAS-04 stage inválido → 400', async () => {
+    const res = await fetch(FN_URL, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeader(DEV_TOKENS.recruiter),
+      },
+      body: JSON.stringify({ applicationId: appId, stage: 'stage_inexistente' }),
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('TC-UAS-05 applicationId ausente en body → 400', async () => {
+    const res = await fetch(FN_URL, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeader(DEV_TOKENS.recruiter),
+      },
+      body: JSON.stringify({ stage: 'screening' }),
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('TC-UAS-06 stage ausente → 400', async () => {
+    const res = await fetch(FN_URL, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeader(DEV_TOKENS.recruiter),
+      },
+      body: JSON.stringify({ applicationId: appId }),
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('TC-UAS-11 notes opcional → 200 y Firestore tiene notes', async () => {
+    const res = await fetch(FN_URL, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeader(DEV_TOKENS.recruiter),
+      },
+      body: JSON.stringify({
+        applicationId: appId,
+        stage: 'screening',
+        notes: 'Candidato prometedor, revisar CV con detalle.',
+      }),
+    });
+
+    expect(res.status).toBe(200);
+
+    const snap = await db.collection(COLLECTION).doc(appId).get();
+    expect(snap.data()?.notes).toBe('Candidato prometedor, revisar CV con detalle.');
+  });
 });

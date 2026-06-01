@@ -8,7 +8,11 @@ import {
 // Regresión del módulo de cálculo puro de match de skills.
 // No tiene dependencias externas — corre sin emuladores ni mocks.
 
-const makeSkill = (name: string, type: Skill['type'] = 'mandatory', weight = 1): Skill => ({
+const makeSkill = (
+  name: string,
+  type: Skill['type'] = 'mandatory',
+  weight = 1,
+): Skill => ({
   name,
   type,
   weight,
@@ -37,7 +41,14 @@ describe('skillMatchCalculator — regresión', () => {
     });
 
     it('filtra valores no-string y cadenas vacías', () => {
-      const set = buildCandidateSkillSet(['React', '', null, undefined, 42, 'Node.js']);
+      const set = buildCandidateSkillSet([
+        'React',
+        '',
+        null,
+        undefined,
+        42,
+        'Node.js',
+      ]);
       expect(set.size).toBe(2);
       expect(set.has('react')).toBe(true);
       expect(set.has('node.js')).toBe(true);

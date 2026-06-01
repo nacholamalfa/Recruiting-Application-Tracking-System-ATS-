@@ -9,7 +9,10 @@ import {
   ApplicationNotFoundError,
   UpdateApplicationStageService,
 } from '../services/updateApplicationService';
-import { validateUpdateApplicationStagePayload } from '../validators/updateApplicationValidator';
+import {
+  UpdateApplicationValidationError,
+  validateUpdateApplicationStagePayload,
+} from '../validators/updateApplicationValidator';
 
 interface UpdateApplicationPayload {
   applicationId: string;
@@ -92,6 +95,11 @@ export const updateApplicationStage = onRequest(async (request, response) => {
   } catch (error) {
     if (error instanceof HttpAuthError) {
       response.status(401).json({ error: error.message });
+      return;
+    }
+
+    if (error instanceof UpdateApplicationValidationError) {
+      response.status(400).json({ error: error.message });
       return;
     }
 

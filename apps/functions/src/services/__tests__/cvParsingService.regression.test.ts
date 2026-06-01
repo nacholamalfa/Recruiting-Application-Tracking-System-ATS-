@@ -63,7 +63,13 @@ describe('CvParsingService — schema de salida (regresión)', () => {
       location: 'Buenos Aires, Argentina',
       professionalSummary:
         'Desarrolladora full stack con experiencia en React, Node.js y Firebase.',
-      technicalSkills: ['TypeScript', 'React', 'Next.js', 'Node.js', 'Firebase'],
+      technicalSkills: [
+        'TypeScript',
+        'React',
+        'Next.js',
+        'Node.js',
+        'Firebase',
+      ],
       education: 'Analista en Sistemas, ORT Argentina',
       parserVersion: 'cv-parser/1.0+gemini-2.5-flash',
     };

@@ -1,5 +1,5 @@
 import { logger } from 'firebase-functions';
-import { onRequest } from 'firebase-functions/v2/https';
+import { HttpsError, onRequest } from 'firebase-functions/v2/https';
 
 import type { SubmitApplicationPayload } from '@ats/shared-types';
 
@@ -35,6 +35,11 @@ export const submitApplication = onRequest(async (req, res) => {
   } catch (error) {
     if (error instanceof HttpAuthError) {
       res.status(401).json({ error: error.message });
+      return;
+    }
+
+    if (error instanceof HttpsError) {
+      res.status(400).json({ error: error.message });
       return;
     }
 

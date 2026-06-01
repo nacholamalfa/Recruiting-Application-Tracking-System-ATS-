@@ -76,4 +76,81 @@ describe('getApplicationsByJob — integración HTTP + Firestore', () => {
 
     expect(res.status).toBe(405);
   });
+
+  it('TC-GAJ-03 orderBy=fitScore&orderDirection=desc devuelve array ordenado descendente', async () => {
+    const appId2 = 'integ-app-for-job-2';
+    db = getTestDb();
+    await db.collection(APPS_COLLECTION).doc(appId2).set({
+      jobId,
+      candidateId: 'cand-integ-2',
+      candidateName: 'Segundo Candidato',
+      candidateEmail: 'second@integ.com',
+      stage: 'applied',
+      status: 'active',
+      fitScore: 50,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      stageUpdatedAt: new Date(),
+    });
+
+    try {
+      const url = new URL(FN_URL);
+      url.searchParams.set('jobId', jobId);
+      url.searchParams.set('orderBy', 'fitScore');
+      url.searchParams.set('orderDirection', 'desc');
+
+      const res = await fetch(url.toString(), {
+        headers: authHeader(DEV_TOKENS.recruiter),
+      });
+
+      expect(res.status).toBe(200);
+      const body = await res.json() as Array<{ fitScore?: number }>;
+      expect(Array.isArray(body)).toBe(true);
+      expect(body.length).toBeGreaterThanOrEqual(2);
+
+      const scores = body.map((a) => a.fitScore ?? 0);
+      for (let i = 1; i < scores.length; i++) {
+        expect(scores[i - 1]).toBeGreaterThanOrEqual(scores[i]);
+      }
+    } finally {
+      await db.collection(APPS_COLLECTION).doc(appId2).delete();
+    }
+  });
+
+  it('TC-GAJ-04 limit=1 devuelve array de máximo 1 elemento', async () => {
+    const url = new URL(FN_URL);
+    url.searchParams.set('jobId', jobId);
+    url.searchParams.set('limit', '1');
+
+    const res = await fetch(url.toString(), {
+      headers: authHeader(DEV_TOKENS.recruiter),
+    });
+
+    expect(res.status).toBe(200);
+    const body = await res.json() as unknown[];
+    expect(Array.isArray(body)).toBe(true);
+    expect(body.length).toBeLessThanOrEqual(1);
+  });
+
+  it('TC-GAJ-06 jobId vacío → 400', async () => {
+    const url = new URL(FN_URL);
+    url.searchParams.set('jobId', '');
+
+    const res = await fetch(url.toString(), {
+      headers: authHeader(DEV_TOKENS.recruiter),
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('TC-GAJ-07 jobId no existe → 404', async () => {
+    const url = new URL(FN_URL);
+    url.searchParams.set('jobId', 'no-existe-xyz-99');
+
+    const res = await fetch(url.toString(), {
+      headers: authHeader(DEV_TOKENS.recruiter),
+    });
+
+    expect(res.status).toBe(404);
+  });
 });

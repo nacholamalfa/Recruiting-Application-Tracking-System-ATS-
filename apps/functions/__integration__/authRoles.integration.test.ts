@@ -1,10 +1,45 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { authHeader, functionUrl, DEV_TOKENS } from './setup';
 
 // Verifica que el control de acceso por rol funciona end-to-end en el emulador.
 // setUserRole es la función más restrictiva: solo admin puede llamarla.
 
+const AUTH_EMULATOR = 'http://127.0.0.1:9099';
+const FAKE_KEY = 'fake-api-key';
+
+// Crea un usuario real en el Auth emulator y devuelve su localId (uid)
+async function createAuthEmulatorUser(email: string, password: string): Promise<string> {
+  const res = await fetch(
+    `${AUTH_EMULATOR}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FAKE_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, returnSecureToken: false }),
+    },
+  );
+  const body = await res.json() as { localId?: string; error?: { message: string } };
+  if (body.localId) return body.localId;
+  // Si ya existe, hacer lookup
+  const lookup = await fetch(
+    `${AUTH_EMULATOR}/identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FAKE_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    },
+  );
+  const lookupBody = await lookup.json() as { users?: Array<{ localId: string }> };
+  return lookupBody.users?.[0]?.localId ?? '';
+}
+
+let targetUid = '';
+
 describe('Auth + roles — integración', () => {
+  beforeAll(async () => {
+    // Crear usuario real en Auth emulator para poder llamar setCustomUserClaims
+    targetUid = await createAuthEmulatorUser('target-for-setrole@test.com', 'pass123456');
+  });
+
   describe('setUserRole', () => {
     it('admin puede asignar rol a otro usuario', async () => {
       const res = await fetch(functionUrl('setUserRole'), {
@@ -13,7 +48,7 @@ describe('Auth + roles — integración', () => {
           'Content-Type': 'application/json',
           ...authHeader(DEV_TOKENS.admin),
         },
-        body: JSON.stringify({ uid: 'recruiter-dev', role: 'hr' }),
+        body: JSON.stringify({ uid: targetUid, role: 'hr' }),
       });
 
       expect(res.status).toBe(200);

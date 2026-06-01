@@ -23,7 +23,9 @@ const makeJob = (overrides: Partial<Job> = {}): Job => ({
   ...overrides,
 });
 
-const makeApplication = (overrides: Partial<Application> = {}): Application => ({
+const makeApplication = (
+  overrides: Partial<Application> = {},
+): Application => ({
   id: 'app-1',
   jobId: 'job-1',
   candidateId: 'cand-1',
@@ -35,23 +37,40 @@ const makeApplication = (overrides: Partial<Application> = {}): Application => (
   ...overrides,
 });
 
-const mockAppRepo = { findByJobId: vi.fn(), findById: vi.fn(), update: vi.fn(), create: vi.fn(), findByCandidateAndJob: vi.fn(), addStageHistoryEntry: vi.fn() };
-const mockJobRepo = { findById: vi.fn(), findWithFilters: vi.fn(), create: vi.fn(), update: vi.fn(), findBySlug: vi.fn(), listDepartments: vi.fn() };
+const mockAppRepo = {
+  findByJobId: vi.fn(),
+  findById: vi.fn(),
+  update: vi.fn(),
+  create: vi.fn(),
+  findByCandidateAndJob: vi.fn(),
+  addStageHistoryEntry: vi.fn(),
+};
+const mockJobRepo = {
+  findById: vi.fn(),
+  findWithFilters: vi.fn(),
+  create: vi.fn(),
+  update: vi.fn(),
+  findBySlug: vi.fn(),
+  listDepartments: vi.fn(),
+};
 
 describe('GetApplicationsByJobService — regresión', () => {
   let service: GetApplicationsByJobService;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new GetApplicationsByJobService(mockAppRepo as any, mockJobRepo as any);
+    service = new GetApplicationsByJobService(
+      mockAppRepo as any,
+      mockJobRepo as any,
+    );
   });
 
   it('lanza JobNotFoundError cuando el job no existe', async () => {
     mockJobRepo.findById.mockResolvedValue(null);
 
-    await expect(service.getApplicationsByJob('job-inexistente')).rejects.toThrow(
-      JobNotFoundError,
-    );
+    await expect(
+      service.getApplicationsByJob('job-inexistente'),
+    ).rejects.toThrow(JobNotFoundError);
   });
 
   it('retorna array vacío cuando el job existe pero no tiene postulaciones', async () => {
@@ -65,7 +84,11 @@ describe('GetApplicationsByJobService — regresión', () => {
   it('mapea las postulaciones al DTO con candidateId y stage', async () => {
     mockJobRepo.findById.mockResolvedValue(makeJob());
     mockAppRepo.findByJobId.mockResolvedValue([
-      makeApplication({ candidateName: 'Ana García', candidateEmail: 'ana@test.com', fitScore: 90 }),
+      makeApplication({
+        candidateName: 'Ana García',
+        candidateEmail: 'ana@test.com',
+        fitScore: 90,
+      }),
     ]);
 
     const result = await service.getApplicationsByJob('job-1');
@@ -84,7 +107,11 @@ describe('GetApplicationsByJobService — regresión', () => {
     mockJobRepo.findById.mockResolvedValue(makeJob());
     mockAppRepo.findByJobId.mockResolvedValue([]);
 
-    await service.getApplicationsByJob('job-1', { orderBy: 'fitScore', orderDirection: 'desc', limit: 10 });
+    await service.getApplicationsByJob('job-1', {
+      orderBy: 'fitScore',
+      orderDirection: 'desc',
+      limit: 10,
+    });
 
     expect(mockAppRepo.findByJobId).toHaveBeenCalledWith('job-1', {
       orderBy: 'fitScore',

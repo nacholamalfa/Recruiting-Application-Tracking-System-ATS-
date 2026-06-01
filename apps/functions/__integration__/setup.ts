@@ -21,6 +21,7 @@ let app: ReturnType<typeof initializeApp>;
 beforeAll(() => {
   process.env['FIRESTORE_EMULATOR_HOST'] =
     `${EMULATOR.firestoreHost}:${EMULATOR.firestorePort}`;
+  process.env['FIREBASE_AUTH_EMULATOR_HOST'] = '127.0.0.1:9099';
   process.env['FUNCTIONS_EMULATOR'] = 'true';
   process.env['GCLOUD_PROJECT'] = 'ats-tema-ort';
 
