@@ -45,5 +45,17 @@ jobs:
       - name: 🔍 Validar Lint
         run: pnpm lint
 
-      - name: 🧪 Ejecutar Tests
+      - name: 🧪 Ejecutar Tests Unitarios
         run: pnpm test
+
+      - name: 🔁 Ejecutar Tests de Regresión
+        run: pnpm test:regression
+
+      - name: ☁️ Ejecutar Tests de Integración
+        if: github.event_name == 'pull_request' && github.base_ref == 'main'
+        uses: w9jds/firebase-action@master
+        with:
+          args: emulators:exec --only auth,functions,firestore,storage --import=./emulator-data "pnpm test:integration"
+        env:
+          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          PROJECT_ID: ${{ secrets.GCLOUD_PROJECT }}

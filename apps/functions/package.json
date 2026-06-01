@@ -10,7 +10,9 @@
     "lint": "tsc --noEmit",
     "serve": "npm run build && firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:regression": "vitest run --config vitest.regression.config.ts"
   },
   "engines": {
     "node": "22"

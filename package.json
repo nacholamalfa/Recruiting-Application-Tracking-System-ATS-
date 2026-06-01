@@ -11,6 +11,8 @@
     "dev-web": "turbo run dev --filter=@ats/web ",
     "test": "turbo run test",
     "test:watch": "turbo run test -- --watch",
+    "test:integration": "turbo run test:integration",
+    "test:regression": "turbo run test:regression",
     "seed": "node scripts/seed-emulator.mjs"
   },
   "config": {

@@ -31,6 +31,23 @@
         "tsconfig.json"
       ],
       "outputs": []
+    },
+    "test:regression": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "src/**/*.ts",
+        "app/**/*.ts",
+        "app/**/*.tsx",
+        "**/__tests__/**/*.regression.test.ts",
+        "**/__tests__/**/*.regression.test.tsx",
+        "vitest.regression.config.ts"
+      ],
+      "outputs": []
+    },
+    "test:integration": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "env": ["FIRESTORE_EMULATOR_HOST", "FUNCTIONS_EMULATOR", "GCLOUD_PROJECT"]
     }
   }
 }
