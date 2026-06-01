@@ -1,10 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { callOnCall, getEmulatorIdToken } from './onCallHelper';
-import {
-  FIXTURE_IDS,
-  seedLinkedFixture,
-  cleanLinkedFixture,
-} from './fixtures';
+import { FIXTURE_IDS, seedLinkedFixture, cleanLinkedFixture } from './fixtures';
 
 describe('getApplicationDetail (EP-07) — integración onCall', () => {
   describe('TC-GAD-01 application existente con candidato y job → 200 ApplicationDetailDTO', () => {
@@ -42,11 +38,7 @@ describe('getApplicationDetail (EP-07) — integración onCall', () => {
   it('TC-GAD-03 applicationId ausente → error invalid-argument', async () => {
     const idToken = await getEmulatorIdToken('test-recruiter-oncall');
 
-    const { body } = await callOnCall(
-      'getApplicationDetail',
-      {},
-      idToken,
-    );
+    const { body } = await callOnCall('getApplicationDetail', {}, idToken);
 
     expect(body.error?.status).toBe('INVALID_ARGUMENT');
   });
@@ -64,10 +56,9 @@ describe('getApplicationDetail (EP-07) — integración onCall', () => {
   });
 
   it('TC-GAD-05 sin auth → error unauthenticated', async () => {
-    const { body } = await callOnCall(
-      'getApplicationDetail',
-      { applicationId: 'any-id' },
-    );
+    const { body } = await callOnCall('getApplicationDetail', {
+      applicationId: 'any-id',
+    });
 
     expect(body.error?.status).toBe('UNAUTHENTICATED');
   });

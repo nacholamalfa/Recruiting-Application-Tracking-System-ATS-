@@ -104,7 +104,7 @@ describe('getApplicationsByJob — integración HTTP + Firestore', () => {
       });
 
       expect(res.status).toBe(200);
-      const body = await res.json() as Array<{ fitScore?: number }>;
+      const body = (await res.json()) as Array<{ fitScore?: number }>;
       expect(Array.isArray(body)).toBe(true);
       expect(body.length).toBeGreaterThanOrEqual(2);
 
@@ -127,7 +127,7 @@ describe('getApplicationsByJob — integración HTTP + Firestore', () => {
     });
 
     expect(res.status).toBe(200);
-    const body = await res.json() as unknown[];
+    const body = (await res.json()) as unknown[];
     expect(Array.isArray(body)).toBe(true);
     expect(body.length).toBeLessThanOrEqual(1);
   });

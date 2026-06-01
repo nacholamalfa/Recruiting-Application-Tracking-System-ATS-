@@ -8,7 +8,10 @@ const AUTH_EMULATOR = 'http://127.0.0.1:9099';
 const FAKE_KEY = 'fake-api-key';
 
 // Crea un usuario real en el Auth emulator y devuelve su localId (uid)
-async function createAuthEmulatorUser(email: string, password: string): Promise<string> {
+async function createAuthEmulatorUser(
+  email: string,
+  password: string,
+): Promise<string> {
   const res = await fetch(
     `${AUTH_EMULATOR}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FAKE_KEY}`,
     {
@@ -17,7 +20,10 @@ async function createAuthEmulatorUser(email: string, password: string): Promise<
       body: JSON.stringify({ email, password, returnSecureToken: false }),
     },
   );
-  const body = await res.json() as { localId?: string; error?: { message: string } };
+  const body = (await res.json()) as {
+    localId?: string;
+    error?: { message: string };
+  };
   if (body.localId) return body.localId;
   // Si ya existe, hacer lookup
   const lookup = await fetch(
@@ -28,7 +34,9 @@ async function createAuthEmulatorUser(email: string, password: string): Promise<
       body: JSON.stringify({ email }),
     },
   );
-  const lookupBody = await lookup.json() as { users?: Array<{ localId: string }> };
+  const lookupBody = (await lookup.json()) as {
+    users?: Array<{ localId: string }>;
+  };
   return lookupBody.users?.[0]?.localId ?? '';
 }
 
@@ -37,7 +45,10 @@ let targetUid = '';
 describe('Auth + roles — integración', () => {
   beforeAll(async () => {
     // Crear usuario real en Auth emulator para poder llamar setCustomUserClaims
-    targetUid = await createAuthEmulatorUser('target-for-setrole@test.com', 'pass123456');
+    targetUid = await createAuthEmulatorUser(
+      'target-for-setrole@test.com',
+      'pass123456',
+    );
   });
 
   describe('setUserRole', () => {

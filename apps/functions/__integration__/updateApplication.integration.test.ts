@@ -39,7 +39,10 @@ describe('updateApplication (EP-02) — integración HTTP + Firestore', () => {
     });
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { success: boolean; fortalezas: string[] };
+    const body = (await res.json()) as {
+      success: boolean;
+      fortalezas: string[];
+    };
     expect(body.success).toBe(true);
     expect(body.fortalezas).toEqual(['Liderazgo', 'Comunicación']);
   });
@@ -58,7 +61,10 @@ describe('updateApplication (EP-02) — integración HTTP + Firestore', () => {
     });
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { success: boolean; fortalezas: string[] };
+    const body = (await res.json()) as {
+      success: boolean;
+      fortalezas: string[];
+    };
     expect(body.success).toBe(true);
     expect(body.fortalezas).toEqual(['Liderazgo']);
   });

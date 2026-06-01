@@ -41,10 +41,9 @@ describe('getApplicationsByCandidate (EP-06) — integración onCall', () => {
   });
 
   it('TC-GAC-06 sin auth → error unauthenticated', async () => {
-    const { body } = await callOnCall(
-      'getApplicationsByCandidate',
-      { candidateId: 'test-candidate-oncall' },
-    );
+    const { body } = await callOnCall('getApplicationsByCandidate', {
+      candidateId: 'test-candidate-oncall',
+    });
 
     expect(body.error?.status).toBe('UNAUTHENTICATED');
   });

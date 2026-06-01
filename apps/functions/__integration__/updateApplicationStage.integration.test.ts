@@ -112,7 +112,9 @@ describe('updateApplicationStage — integración HTTP + Firestore', () => {
     const snap = await db.collection(COLLECTION).doc(appId).get();
     expect(snap.data()?.stage).toBe('rejected');
     expect(snap.data()?.status).toBe('rejected');
-    expect(snap.data()?.rejectionReason).toBe('No cumple los requisitos mínimos.');
+    expect(snap.data()?.rejectionReason).toBe(
+      'No cumple los requisitos mínimos.',
+    );
   });
 
   it('TC-UAS-03 stage rejected SIN rejectionReason → 400', async () => {
@@ -135,7 +137,10 @@ describe('updateApplicationStage — integración HTTP + Firestore', () => {
         'Content-Type': 'application/json',
         ...authHeader(DEV_TOKENS.recruiter),
       },
-      body: JSON.stringify({ applicationId: appId, stage: 'stage_inexistente' }),
+      body: JSON.stringify({
+        applicationId: appId,
+        stage: 'stage_inexistente',
+      }),
     });
 
     expect(res.status).toBe(400);
@@ -184,6 +189,8 @@ describe('updateApplicationStage — integración HTTP + Firestore', () => {
     expect(res.status).toBe(200);
 
     const snap = await db.collection(COLLECTION).doc(appId).get();
-    expect(snap.data()?.notes).toBe('Candidato prometedor, revisar CV con detalle.');
+    expect(snap.data()?.notes).toBe(
+      'Candidato prometedor, revisar CV con detalle.',
+    );
   });
 });

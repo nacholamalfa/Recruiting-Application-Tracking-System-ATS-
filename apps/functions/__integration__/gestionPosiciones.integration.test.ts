@@ -10,7 +10,9 @@ const VALID_JOB_PAYLOAD = {
   seniority: 'semi-senior',
   location: 'remote',
   description: 'Posición de integración para tests.',
-  skills: [{ name: 'TypeScript', type: 'mandatory', weight: 1, yearsOfExperience: 2 }],
+  skills: [
+    { name: 'TypeScript', type: 'mandatory', weight: 1, yearsOfExperience: 2 },
+  ],
   responsabilities: ['Desarrollar features'],
   benefits: ['Trabajo remoto'],
   hiringManagerId: 'manager-integ',
@@ -57,20 +59,23 @@ describe('Gestión de posiciones (F-08) — integración HTTP', () => {
   it('CP-TP-01 posición con status=open aparece en listOpenJobs sin auth', async () => {
     db = getTestDb();
     const jobId = 'integ-open-job-tablero';
-    await db.collection('jobs').doc(jobId).set({
-      ...VALID_JOB_PAYLOAD,
-      id: jobId,
-      status: 'open',
-      slug: 'dev-full-stack-integ-tablero',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    await db
+      .collection('jobs')
+      .doc(jobId)
+      .set({
+        ...VALID_JOB_PAYLOAD,
+        id: jobId,
+        status: 'open',
+        slug: 'dev-full-stack-integ-tablero',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
 
     try {
       const res = await fetch(functionUrl('listOpenJobs'));
 
       expect(res.status).toBe(200);
-      const body = await res.json() as Array<{ id: string }>;
+      const body = (await res.json()) as Array<{ id: string }>;
       expect(Array.isArray(body)).toBe(true);
       const found = body.some((j) => j.id === jobId);
       expect(found).toBe(true);
@@ -83,20 +88,23 @@ describe('Gestión de posiciones (F-08) — integración HTTP', () => {
   it('CP-TP-03 posición con status=closed no aparece en listOpenJobs', async () => {
     db = getTestDb();
     const jobId = 'integ-closed-job-tablero';
-    await db.collection('jobs').doc(jobId).set({
-      ...VALID_JOB_PAYLOAD,
-      id: jobId,
-      status: 'closed',
-      slug: 'dev-full-stack-integ-closed',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    await db
+      .collection('jobs')
+      .doc(jobId)
+      .set({
+        ...VALID_JOB_PAYLOAD,
+        id: jobId,
+        status: 'closed',
+        slug: 'dev-full-stack-integ-closed',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
 
     try {
       const res = await fetch(functionUrl('listOpenJobs'));
 
       expect(res.status).toBe(200);
-      const body = await res.json() as Array<{ id: string }>;
+      const body = (await res.json()) as Array<{ id: string }>;
       const found = body.some((j) => j.id === jobId);
       expect(found).toBe(false);
     } finally {
@@ -110,14 +118,17 @@ describe('Gestión de posiciones (F-08) — integración HTTP', () => {
 
     beforeEach(async () => {
       db = getTestDb();
-      await db.collection('jobs').doc(jobId).set({
-        ...VALID_JOB_PAYLOAD,
-        id: jobId,
-        status: 'draft',
-        slug: 'dev-full-stack-to-edit',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+      await db
+        .collection('jobs')
+        .doc(jobId)
+        .set({
+          ...VALID_JOB_PAYLOAD,
+          id: jobId,
+          status: 'draft',
+          slug: 'dev-full-stack-to-edit',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
     });
 
     afterEach(async () => {
@@ -150,14 +161,17 @@ describe('Gestión de posiciones (F-08) — integración HTTP', () => {
 
     beforeEach(async () => {
       db = getTestDb();
-      await db.collection('jobs').doc(jobId).set({
-        ...VALID_JOB_PAYLOAD,
-        id: jobId,
-        status: 'open',
-        slug: 'dev-full-stack-to-close',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+      await db
+        .collection('jobs')
+        .doc(jobId)
+        .set({
+          ...VALID_JOB_PAYLOAD,
+          id: jobId,
+          status: 'open',
+          slug: 'dev-full-stack-to-close',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
     });
 
     afterEach(async () => {

@@ -21,22 +21,25 @@ export const FIXTURE_PROFILE = {
 export async function seedLinkedFixture() {
   const db = getTestDb();
 
-  await db.collection('candidates').doc(FIXTURE_IDS.candidateId).set({
-    id: FIXTURE_IDS.candidateId,
-    firstName: FIXTURE_PROFILE.firstName,
-    lastName: FIXTURE_PROFILE.lastName,
-    fullName: `${FIXTURE_PROFILE.firstName} ${FIXTURE_PROFILE.lastName}`,
-    email: FIXTURE_PROFILE.email,
-    phone: FIXTURE_PROFILE.phone,
-    location: FIXTURE_PROFILE.location,
-    technicalSkills: FIXTURE_PROFILE.technicalSkills,
-    profileStatus: 'pending',
-    registrationType: 'specific',
-    registrationSource: 'cv_upload',
-    cvParseStatus: 'done',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
+  await db
+    .collection('candidates')
+    .doc(FIXTURE_IDS.candidateId)
+    .set({
+      id: FIXTURE_IDS.candidateId,
+      firstName: FIXTURE_PROFILE.firstName,
+      lastName: FIXTURE_PROFILE.lastName,
+      fullName: `${FIXTURE_PROFILE.firstName} ${FIXTURE_PROFILE.lastName}`,
+      email: FIXTURE_PROFILE.email,
+      phone: FIXTURE_PROFILE.phone,
+      location: FIXTURE_PROFILE.location,
+      technicalSkills: FIXTURE_PROFILE.technicalSkills,
+      profileStatus: 'pending',
+      registrationType: 'specific',
+      registrationSource: 'cv_upload',
+      cvParseStatus: 'done',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
 
   await db.collection('jobs').doc(FIXTURE_IDS.jobId).set({
     id: FIXTURE_IDS.jobId,
@@ -98,5 +101,8 @@ export async function cleanLinkedFixture() {
 
 export async function cleanMismatchFixture() {
   const db = getTestDb();
-  await db.collection('candidates').doc(FIXTURE_IDS.mismatchCandidateId).delete();
+  await db
+    .collection('candidates')
+    .doc(FIXTURE_IDS.mismatchCandidateId)
+    .delete();
 }

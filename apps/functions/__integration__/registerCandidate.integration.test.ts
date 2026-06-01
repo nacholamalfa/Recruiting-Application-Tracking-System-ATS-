@@ -80,7 +80,10 @@ describe('registerCandidate (EP-08) — integración HTTP', () => {
       });
 
       expect(res.status).toBe(200);
-      const body = await res.json() as { candidateId: string; applicationId?: string };
+      const body = (await res.json()) as {
+        candidateId: string;
+        applicationId?: string;
+      };
       expect(typeof body.candidateId).toBe('string');
       expect(body.candidateId.length).toBeGreaterThan(0);
     } finally {
@@ -158,7 +161,10 @@ describe('registerCandidate (EP-08) — integración HTTP', () => {
       expect(res.status).toBe(409);
     } finally {
       await db.collection('jobs').doc(jobId).delete();
-      await db.collection(CANDIDATES_COLLECTION).doc(existingCandidateId).delete();
+      await db
+        .collection(CANDIDATES_COLLECTION)
+        .doc(existingCandidateId)
+        .delete();
       await db.collection('applications').doc(existingAppId).delete();
     }
   });
