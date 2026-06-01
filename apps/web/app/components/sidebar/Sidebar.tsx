@@ -34,23 +34,23 @@ const NAV_ITEMS: Array<{
   icon: LucideIcon;
   allowedRoles?: EmployeeRole[];
 }> = [
-    {
-      label: 'Posiciones',
-      href: '/dashboard/positions',
-      icon: BriefcaseBusiness,
-    },
-    {
-      label: 'Candidatos',
-      href: '/dashboard/candidates',
-      icon: Users,
-    },
-    {
-      label: 'Plantillas',
-      href: '/dashboard/communication-templates',
-      icon: Mail,
-      allowedRoles: ['hr', 'hiring_manager'],
-    },
-  ];
+  {
+    label: 'Posiciones',
+    href: '/dashboard/positions',
+    icon: BriefcaseBusiness,
+  },
+  {
+    label: 'Candidatos',
+    href: '/dashboard/candidates',
+    icon: Users,
+  },
+  {
+    label: 'Plantillas',
+    href: '/dashboard/communication-templates',
+    icon: Mail,
+    allowedRoles: ['hr', 'hiring_manager'],
+  },
+];
 
 const ROLE_LABELS: Record<EmployeeRole, string> = {
   hr: 'Recruiter',
